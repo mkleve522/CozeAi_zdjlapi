@@ -1,31 +1,40 @@
 // 自动攻击 + 自动吃药脚本
 // 说明：
-// 1. 技能释放默认使用键盘按键，需要自动精灵输入法已开启
+// 1. 技能、普攻、吃药默认使用点击屏幕按钮
 // 2. 低血量/低体力检测默认基于状态条取色
 // 3. 坐标优先使用百分比，便于多分辨率适配
 
 const config = {
   loopInterval: 60,
 
-  // 普攻按键
-  normalAttackKey: 'space',
+  // 普攻按钮坐标
+  normalAttackButton: {
+    x: '88%',
+    y: '78%',
+  },
 
-  // 低血量/低体力时使用的药品按键
-  hpPotionKey: 'f1',
-  spPotionKey: 'f2',
+  // 低血量/低体力时使用的药品按钮坐标
+  hpPotionButton: {
+    x: '76%',
+    y: '88%',
+  },
+  spPotionButton: {
+    x: '84%',
+    y: '88%',
+  },
 
   // 吃药后的公共等待，避免连吃
   potionBackswing: 600,
 
   // 技能配置：priority 越小优先级越高
   skills: [
-    { name: '技能1', key: '1', priority: 1, cooldown: 5000, backswing: 450, enabled: true },
-    { name: '技能2', key: '2', priority: 2, cooldown: 8000, backswing: 500, enabled: true },
-    { name: '技能3', key: '3', priority: 3, cooldown: 12000, backswing: 550, enabled: true },
-    { name: '技能4', key: '4', priority: 4, cooldown: 15000, backswing: 650, enabled: true },
-    { name: '技能5', key: '5', priority: 5, cooldown: 20000, backswing: 700, enabled: true },
-    { name: '技能6', key: '6', priority: 6, cooldown: 25000, backswing: 750, enabled: true },
-    { name: '技能7', key: '7', priority: 7, cooldown: 30000, backswing: 800, enabled: true },
+    { name: '技能1', x: '70%', y: '78%', priority: 1, cooldown: 5000, backswing: 450, enabled: true },
+    { name: '技能2', x: '76%', y: '78%', priority: 2, cooldown: 8000, backswing: 500, enabled: true },
+    { name: '技能3', x: '82%', y: '78%', priority: 3, cooldown: 12000, backswing: 550, enabled: true },
+    { name: '技能4', x: '70%', y: '88%', priority: 4, cooldown: 15000, backswing: 650, enabled: true },
+    { name: '技能5', x: '76%', y: '88%', priority: 5, cooldown: 20000, backswing: 700, enabled: true },
+    { name: '技能6', x: '82%', y: '88%', priority: 6, cooldown: 25000, backswing: 750, enabled: true },
+    { name: '技能7', x: '88%', y: '88%', priority: 7, cooldown: 30000, backswing: 800, enabled: true },
   ],
 
   normalAttack: {
@@ -84,31 +93,30 @@ function colorDistance(c1, c2) {
   return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2);
 }
 
-async function pressKey(key, duration = 80) {
-  zdjl.keyPress(key, duration);
-  await zdjl.sleepAsync(duration);
+async function clickButton(button, duration = 80) {
+  await zdjl.clickAsync(button.x, button.y, duration);
 }
 
 async function useHpPotion() {
-  await pressKey(config.hpPotionKey);
+  await clickButton(config.hpPotionButton);
   state.lastHpPotionAt = now();
   await zdjl.sleepAsync(config.potionBackswing);
 }
 
 async function useSpPotion() {
-  await pressKey(config.spPotionKey);
+  await clickButton(config.spPotionButton);
   state.lastSpPotionAt = now();
   await zdjl.sleepAsync(config.potionBackswing);
 }
 
 async function castSkill(skill) {
-  await pressKey(skill.key);
+  await clickButton(skill);
   state.lastSkillAt[skill.name] = now();
   await zdjl.sleepAsync(skill.backswing);
 }
 
 async function normalAttack() {
-  await pressKey(config.normalAttackKey);
+  await clickButton(config.normalAttackButton);
   state.lastNormalAttackAt = now();
   await zdjl.sleepAsync(config.normalAttack.backswing);
 }
